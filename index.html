@@ -9,6 +9,17 @@
     div{
         background-color: azure;
     }
+    .plott{
+        width:  50%;
+        height: 300px;
+    }
+    .alignright{
+        float: right;
+    }
+    .alignleft{
+        float: left;
+    }
+
 </style>
 </head>
 <body>
@@ -24,9 +35,10 @@ Krav på innehåll:
         Samtliga ”min_stay” värden måste visualiseras.
     • #piechart         
         Ett paj diagram som visar andel procent av varje typ av rum ”room_type” har av det totala antalen objekt.
-
     • Alla spridningsplott, histogram, och boxplott måste ha namn på x-axeln och y axeln motsvarande vad axeln representerar.
     • Paj-diagramet skall ha namn på varje typ av ”room_type”.
+var price = []
+
 
     Tekniska krav:
     • Koden skall gå att köras på Google Chrome
@@ -38,11 +50,14 @@ Krav på innehåll:
         Du får ladda upp filerna med Git Bash eller Manuellt.
         Skicka även länken till din labbpartner som ska ge dig feedback 
 -->
+<div>
+    <div id="Scatter" class="alignleft plott"></div>
+    <div id="Histogram" class="alignright plott"></div>
+    <div id="Boxplot" class="alignleft plott"></div>
+    <div id="piechart" class="alignright plott"></div>
+</div>
 
-    <div id="Scatter" style="width:600px;height:250px;"></div>
-    <div id="Histogram" style="width:600px;height:250px;"></div>
-    <div id="Boxplot" style="width:600px;height:250px;"></div>
-    <div id="piechart" style="width:600px;height:250px;"></div>
 </body>
+<script src="bnbjson.js"></script>
 <script src="myjs.js"></script>
 </html>
