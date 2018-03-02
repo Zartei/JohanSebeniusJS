@@ -7306,8 +7306,7 @@ var Pajdata = [{
 }];
 
 var Pajlayout = {
-  height: 400,
-  width: 500,
+
   title: 'Room types'
 };
 
