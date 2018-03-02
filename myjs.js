@@ -17,68 +17,73 @@ var trace1 = {
 
 var data = [trace1];
 
-Plotly.newPlot(Scatter, data);
+var ScatterLayout = {
+  title: 'Spridningen av hyrespriserna',
+  xaxis: {
+    title: 'Pris'
+  },
+  yaxis: {
+    title: 'Antal recensioner'
+  }
+};
 
-// Setup for the histogram
-// todo
+Plotly.newPlot(Scatter, data, ScatterLayout);
+
+// Setup for the Histogram
+
 var Histo = document.getElementById("Histogram");
-var HistoX = [], pajLopp = [];
+var Histo1 = [],Histo2 = [];
 for (var i = 0; i < bnbJson.length ; i ++) {
-  HistoX[i]   = bnbJson[i].price;
-  pajLopp[i]  = bnbJson[i].room_type; 
+  Histo1[i]   = bnbJson[i].price;
+  Histo2[i] = bnbJson[i].accommodates;
 }
 
-var Histotrace = {
-    x: HistoX,
+var Histotrace1 = {
+    x: Histo1,
     type: 'histogram',
   };
-var histodata = [Histotrace];
+  var Histotrace2 = {
+    x: Histo2,
+    type: 'histogram',
+  };
 
-Plotly.newPlot(Histo, histodata);
-
-// Setup for the Boxplot
-// todo
-
-
-var Box = document.getElementById("Boxplot");
-var y0=[],y1=[];
-for (var i = 0; i < 50; i ++) {
-	y0[i] = Math.random();
-	y1[i] = Math.random() + 1;
-}
-
-var Boxtrace1 = {
-  y: y0,
-  type: 'box'
+var HistoLayout1 = {
+  title: 'Spridningen av hyrespriserna',
+  xaxis: {
+    title: 'Pris'
+  },
+  yaxis: {
+    title: 'Antal'
+  }
 };
 
-var Boxtrace2 = {
-  y: y1,
-  type: 'box'
+var HistoLayout2 = {
+  title: 'Spridningen av antal gäster',
+  xaxis: {
+    title: 'ackommoderade'
+  },
+  yaxis: {
+    title: 'Antal'
+  }
 };
 
-var Boxdata = [Boxtrace1, Boxtrace2];
-
-Plotly.newPlot(Box, Boxdata);
-
-// Setup for the piechart
-var Paj = document.getElementById("piechart");
+Plotly.newPlot(Histo, [Histotrace1],HistoLayout1);
+Plotly.newPlot(document.getElementById("Histogram2"), [Histotrace2],HistoLayout2);
 
 
+// Box n whiskers plot
 var boxSet = bnbJson.map(function (room){return [room.minstay, room.price]});
 
+// Legend function används ej.
 function keys(data){
   var grouped = [];
-  console.log("Started");
   for (let i = 0;i < data.length; i++){
     if(!grouped.includes(data[i][0])){
       grouped.push(data[i][0]);
-    console.log("inloop");
     }
   }
   return grouped;
 }
-
 var boxKey = keys(boxSet);
 
 var groupBy = function(xs, key) {
@@ -87,39 +92,44 @@ var groupBy = function(xs, key) {
     return rv;
   }, {});
 };
-var dump = groupBy(boxSet,'0');
-
-/* for(let i = 0; i < Object.keys(dump).length;i++){
-  console.log("inside");
-  for (let j = 0; j < dump[i].length){
-    console.log(dump[i][j]);
-  }
-} */
-
-
-console.log("start");
+var boxGrouped = groupBy(boxSet,'0');
 
 function boxData(dump){
   var output= []
   Object.keys(dump).forEach(function(element) {
     var dumpArray = [];
     for (let i = 0; i < dump[element].length; i++){
-      console.log(dump[element][i][1]);
+     
       dumpArray.push(dump[element][i][1]);
+
     }
-    output.push(dumpArray);
+    output.push({
+        y:dumpArray,
+        type:'box',
+        name:'MS: '+ element});
   })
   return output;
 }
 
-console.log("done");
-var dumpArray = boxData(dump);
+var BoxTrace = boxData(boxGrouped);
 
-//reducers
-function getRooms(test){
-  return test.room_type;
-}
-var rooms = bnbJson.map(getRooms);
+var Box = document.getElementById("Boxplot");
+
+var BoxLayout = {
+  title: 'Pris grupperad på min stay.',
+  showlegend: false,
+  yaxis: {
+    title: 'Pris'
+  }
+};
+
+Plotly.newPlot(Box, BoxTrace, BoxLayout);
+
+
+// Create pie chart.
+var Paj = document.getElementById("piechart");
+
+var rooms = bnbJson.map(function (room){return room.room_type});
 var countedRooms = rooms.reduce(function (allRooms, room){
   if(room in allRooms){
     allRooms[room]++;
@@ -130,8 +140,6 @@ var countedRooms = rooms.reduce(function (allRooms, room){
   return allRooms;
 }, {});
 
-
-
 var Pajdata = [{
   values: Object.values(countedRooms),
   labels: Object.getOwnPropertyNames(countedRooms),
@@ -140,7 +148,34 @@ var Pajdata = [{
 
 var Pajlayout = {
   height: 400,
-  width: 500
+  width: 500,
+  title: 'Room types'
 };
 
 Plotly.newPlot(Paj, Pajdata, Pajlayout);
+
+
+// test inbyggda group by function
+var scatterData = bnbJson.map(function (room){return [room.reviews, room.price]});
+var testBoxMS = [], testBoxPrice = [];
+for (let i = 0; i < bnbJson.length; i++){
+  testBoxMS.push(bnbJson[i].minstay);
+  testBoxPrice.push(bnbJson[i].price);
+}
+
+var data = [{
+  type: 'box',
+  x: testBoxMS,
+  y: testBoxPrice,
+  transforms: [{
+    type: 'groupby',
+    groups: testBoxMS,
+  }]
+}]
+
+var testLayout = {
+  title: 'Pris grupperad på min stay.',
+  showlegend: false
+}
+
+Plotly.plot(document.getElementById("test"), data,testLayout);
